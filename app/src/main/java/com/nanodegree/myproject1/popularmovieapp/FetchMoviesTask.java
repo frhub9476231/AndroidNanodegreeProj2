@@ -27,7 +27,7 @@ public class FetchMoviesTask extends AsyncTask<String, Void, MoviesList> {
         Uri uri = constructUrl(params);
         Log.i(Constants.LOG_TAG, uri + "");
         String apiResult = callAPI(uri);
-        Log.i(Constants.LOG_TAG, apiResult);
+        Log.i(Constants.LOG_TAG, apiResult == null ? "api result is null":apiResult);
         MoviesList res = parseJson(apiResult);
         Log.i(Constants.LOG_TAG, res + "");
         return res;

@@ -52,7 +52,6 @@ public class MovieDetailActivityFragment extends Fragment {
             detailUserRating.setText(gridItem.getVoteAverage() + "");
         }
 
-
         return rootView;
     }
 }

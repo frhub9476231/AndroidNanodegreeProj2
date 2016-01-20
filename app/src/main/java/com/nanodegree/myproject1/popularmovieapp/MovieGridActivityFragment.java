@@ -2,6 +2,8 @@ package com.nanodegree.myproject1.popularmovieapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -81,17 +83,31 @@ public class MovieGridActivityFragment extends Fragment implements AdapterView.O
         return super.onOptionsItemSelected(item);
     }
 
+    private boolean isOnline(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        return isConnected;
+    }
+
     private List<Movie> fetchMovieHelper(String sortBy) {
         Log.i(Constants.LOG_TAG, "calling fetch movie helper: " + sortBy);
-        FetchMoviesTask ft = new FetchMoviesTask();
-        AsyncTask<String, Void, MoviesList> res = ft.execute(sortBy);
+
         MoviesList r = null;
-        try {
-            r = res.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+
+        if (isOnline(getActivity())) {
+            FetchMoviesTask ft = new FetchMoviesTask();
+            AsyncTask<String, Void, MoviesList> res = ft.execute(sortBy);
+            try {
+                r = res.get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
         }
 
         List<Movie> movies = new ArrayList<Movie>();

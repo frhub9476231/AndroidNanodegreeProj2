@@ -49,7 +49,7 @@ public class CustomGridViewAdapter extends ArrayAdapter<GridItem> {
             Picasso.with(context).load(Constants.BASE_IMAGE_URL + gridItem.getImageUrl()).into(vh.imageView);
         } else {
             // https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/300px-No_image_available.svg.png
-            Picasso.with(context).load(R.drawable.noimage300px).into(vh.imageView);
+            Picasso.with(context).load(R.drawable.noimage300px).resize(280,150).into(vh.imageView);
         }
 
         return convertView;

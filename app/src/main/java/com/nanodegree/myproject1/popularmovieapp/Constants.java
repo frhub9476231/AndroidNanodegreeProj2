@@ -8,5 +8,5 @@ public class Constants {
     public static final String GRID_ITEM_KEY = "griditem";
     public static final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/w185";
     // TODO: must replace API KEY with your own!
-    public static final String API_KEY = "REPLACE_ME";
+    public static final String API_KEY = "REPLACEME";
 }
