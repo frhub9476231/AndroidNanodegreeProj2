@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 21
@@ -6,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "com.nanodegree.myproject1.popularmovieapp"
-        minSdkVersion 11
+        minSdkVersion 15
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
@@ -17,6 +18,19 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.5.0'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.+'
+
+    }
 }
 
 dependencies {
@@ -25,8 +39,9 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.google.code.gson:gson:2.2.4'
+    apt 'net.simonvt.schematic:schematic-compiler:0.+'
+    compile 'net.simonvt.schematic:schematic:0.+'
+    //compile 'com.github.provigen:ProviGen-lib:2.0.+'
 }
 
-repositories {
-    mavenCentral()
-}
+

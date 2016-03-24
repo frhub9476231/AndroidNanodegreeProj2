@@ -7,13 +7,15 @@ import android.os.Parcelable;
  * Created by frank on 10/27/15.
  */
 public class GridItem implements Parcelable {
+    private Integer id;
     private String title;
     private String imageUrl;
     private String overview;
     private Float voteAverage;
     private String releaseDate;
 
-    public GridItem(String title, String imageUrl, String overview, Float voteAverage, String releaseDate) {
+    public GridItem(Integer id, String title, String imageUrl, String overview, Float voteAverage, String releaseDate) {
+        this.id = id;
         this.title = title;
         this.imageUrl = imageUrl;
         this.overview = overview;
@@ -22,6 +24,7 @@ public class GridItem implements Parcelable {
     }
 
     protected GridItem(Parcel in) {
+        id = in.readInt();
         title = in.readString();
         imageUrl = in.readString();
         overview = in.readString();
@@ -36,6 +39,7 @@ public class GridItem implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
         dest.writeString(title);
         dest.writeString(imageUrl);
         dest.writeString(overview);
@@ -60,6 +64,15 @@ public class GridItem implements Parcelable {
             return new GridItem[size];
         }
     };
+
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getTitle() {
         return title;
@@ -104,7 +117,8 @@ public class GridItem implements Parcelable {
     @Override
     public String toString() {
         return "GridItem{" +
-                "title='" + title + '\'' +
+                "id=" + id +
+                ", title='" + title + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +
                 ", overview='" + overview + '\'' +
                 ", voteAverage=" + voteAverage +

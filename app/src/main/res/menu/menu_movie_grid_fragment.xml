@@ -14,5 +14,7 @@
             android:id="@+id/sort_by_highest_rated_desc"/>
         <item android:title="highest rated asc"
             android:id="@+id/sort_by_highest_rated_asc"/>
+        <item android:title="favorite movies"
+            android:id="@+id/sort_by_favorite_movies"/>
     </group>
 </menu>

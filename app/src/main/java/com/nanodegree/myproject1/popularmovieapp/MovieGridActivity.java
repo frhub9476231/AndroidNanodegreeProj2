@@ -1,7 +1,9 @@
 package com.nanodegree.myproject1.popularmovieapp;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -12,6 +14,17 @@ public class MovieGridActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_grid);
 
+        if (null == savedInstanceState) {
+            Log.i(Constants.LOG_TAG, "save instance null");
+        }
+
+        String res = (String) findViewById(R.id.fragment).getTag();
+        Log.i(Constants.LOG_TAG, "frag2: " + res);
+
+        int layoutSize = getResources().getConfiguration().screenLayout;
+        layoutSize = layoutSize & Configuration.SCREENLAYOUT_SIZE_MASK;
+
+        Log.i(Constants.LOG_TAG, "layoutsize: " + layoutSize);
     }
 
     @Override

@@ -28,6 +28,29 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.nanodegree.myproject1.popularmovieapp.MovieGridActivity" />
         </activity>
+
+        <provider
+            android:authorities="com.nanodegree.myproject1.popularmovieapp.FavoriteMovieContentProvider"
+            android:name="com.nanodegree.myproject1.popularmovieapp.provider.FavoriteMovieContentProvider"
+            android:exported="false"
+            />
+
+
     </application>
+
+    <supports-screens
+        android:largeScreens="true"
+        android:xlargeScreens="true"
+        android:requiresSmallestWidthDp="600"
+        />
+
+    <compatible-screens>
+
+        <screen
+            android:screenDensity="mdpi"
+            android:screenSize="large"></screen>
+
+    </compatible-screens>
+
 
 </manifest>

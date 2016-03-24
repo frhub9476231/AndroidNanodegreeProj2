@@ -2,6 +2,7 @@ package com.nanodegree.myproject1.popularmovieapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -76,6 +77,9 @@ public class MovieGridActivityFragment extends Fragment implements AdapterView.O
                 sortBy = "popularity.desc";
                 customGridViewAdapter.addAll(createGridListHelper(fetchMovieHelper(sortBy)));
                 break;
+            case R.id.sort_by_favorite_movies:
+                customGridViewAdapter.addAll(createGridListHelper(fetchFavoriteMovies()));
+                break;
             default:
                 break;
         }
@@ -93,6 +97,27 @@ public class MovieGridActivityFragment extends Fragment implements AdapterView.O
         return isConnected;
     }
 
+    // Helper method to query favorite movie list from content provider
+    private List<Movie> fetchFavoriteMovies() {
+        List<Movie> retval = new ArrayList<Movie>();
+
+        Cursor c = getActivity().getContentResolver().query(FavoriteMovieContentProvider.Lists.LISTS, null, null, null, null);
+
+        while (c.moveToNext()) {
+            Movie m = new Movie();
+            m.setBackdrop_path(c.getString(5));
+            m.setId(c.getInt(7));
+            m.setTitle(c.getString(1));
+            m.setOverview(c.getString(6));
+            m.setVote_average(c.getFloat(4));
+            m.setRelease_date(c.getString(2));
+            retval.add(m);
+        }
+
+        return retval;
+    }
+
+    // fetches movies from api
     private List<Movie> fetchMovieHelper(String sortBy) {
         Log.i(Constants.LOG_TAG, "calling fetch movie helper: " + sortBy);
 
@@ -121,7 +146,8 @@ public class MovieGridActivityFragment extends Fragment implements AdapterView.O
         List<GridItem> gt = new ArrayList<GridItem>();
 
         for (Movie m: movies) {
-            GridItem gi = new GridItem(m.getTitle(), m.getBackdrop_path(), m.getOverview(), m.getVote_average(), m.getRelease_date());
+            GridItem gi = new GridItem(m.getId(), m.getTitle(), m.getBackdrop_path(),
+                    m.getOverview(), m.getVote_average(), m.getRelease_date());
             gt.add(gi);
         }
         return gt;
