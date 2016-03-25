@@ -8,7 +8,7 @@ public class Constants {
     public static final String GRID_ITEM_KEY = "griditem";
     public static final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/w500";
     // TODO: must replace API KEY with your own!
-    public static final String API_KEY = "f54ba64b5f7ad38856bf351b50c35445";
+    public static final String API_KEY = "REPLACE";
 
     public static final String BASE_API_URL = "http://api.themoviedb.org/3";
     public static final String BASE_MOVIE_URL = BASE_API_URL + "/movie";
