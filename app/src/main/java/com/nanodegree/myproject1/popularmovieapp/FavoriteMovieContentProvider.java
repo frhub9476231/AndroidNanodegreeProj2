@@ -44,8 +44,6 @@ public final class FavoriteMovieContentProvider {
         @NotifyInsert(paths = "lists")
         public static Uri[] onInsert(ContentValues values) {
             Log.i(Constants.LOG_TAG, "insert values:" + values);
-//            final long listId = values.getAsLong(FavoriteMoviesListColumns._ID);
-//            Log.i(Constants.LOG_TAG, "listId:" + listId);
             Log.i(Constants.LOG_TAG, "" + LISTS);
             return new Uri[] {};
         }

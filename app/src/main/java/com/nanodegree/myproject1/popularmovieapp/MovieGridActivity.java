@@ -14,10 +14,6 @@ public class MovieGridActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_grid);
 
-        if (null == savedInstanceState) {
-            Log.i(Constants.LOG_TAG, "save instance null");
-        }
-
         String res = (String) findViewById(R.id.fragment).getTag();
         Log.i(Constants.LOG_TAG, "frag2: " + res);
 

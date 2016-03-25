@@ -15,7 +15,6 @@ public class MovieDetailActivity extends ActionBarActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
         int layoutSize = getResources().getConfiguration().screenLayout;
         layoutSize = layoutSize & Configuration.SCREENLAYOUT_SIZE_MASK;
 

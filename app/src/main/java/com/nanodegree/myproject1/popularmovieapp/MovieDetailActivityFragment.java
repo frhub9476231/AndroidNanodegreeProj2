@@ -1,6 +1,7 @@
 package com.nanodegree.myproject1.popularmovieapp;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -27,6 +28,7 @@ import com.nanodegree.myproject1.popularmovieapp.dto.Trailer;
 import com.nanodegree.myproject1.popularmovieapp.dto.TrailersList;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -53,8 +55,6 @@ public class MovieDetailActivityFragment extends Fragment {
         setHasOptionsMenu(true);
     }
 
-    private String firstYouTubeLink = null;
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -63,24 +63,11 @@ public class MovieDetailActivityFragment extends Fragment {
             case R.id.you_tube_link:
                 Log.i(Constants.LOG_TAG, "clicked on youtube option");
 
-
                 Intent i = this.getActivity().getIntent();
                 final GridItem gridItem = i.getParcelableExtra(Constants.GRID_ITEM_KEY);
                 final String movieId = gridItem.getId() + "";
 
-                FetchTrailersTask trailersTask = new FetchTrailersTask();
-                AsyncTask<String, Void, TrailersList> trailersTaskRes = trailersTask.execute(movieId);
-
-                TrailersList trailersList = null;
-                try {
-                    trailersList = trailersTaskRes.get();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-
-                List<Trailer> trailers = trailersList.getResults();
+                List<Trailer> trailers = fetchTrailersHelper(movieId, getActivity());
 
                 for (Trailer t : trailers) {
                     Intent sendIntent = new Intent();
@@ -90,12 +77,25 @@ public class MovieDetailActivityFragment extends Fragment {
                     startActivity(Intent.createChooser(sendIntent,"Share using"));
                     break;
                 }
-
-
-
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private MovieDetail fetchMovieDetailHelper(String movieId) {
+        if (Utility.isOnline(getActivity())) {
+            FetchMovieTask movieTask = new FetchMovieTask();
+            AsyncTask<String, Void, MovieDetail> movieTaskRes = movieTask.execute(movieId);
+            try {
+                MovieDetail movieDetail = movieTaskRes.get();
+                return movieDetail;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
     @Override
@@ -126,15 +126,7 @@ public class MovieDetailActivityFragment extends Fragment {
             movieDetail = md;
             Log.i(Constants.LOG_TAG, "pulling from movie stored");
         } else {
-            FetchMovieTask movieTask = new FetchMovieTask();
-            AsyncTask<String, Void, MovieDetail> movieTaskRes = movieTask.execute(movieId);
-            try {
-                movieDetail = movieTaskRes.get();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
+            movieDetail = fetchMovieDetailHelper(movieId);
             Log.i(Constants.LOG_TAG, "pulling from movie site");
         }
 
@@ -164,7 +156,6 @@ public class MovieDetailActivityFragment extends Fragment {
             Picasso.with(this.getActivity().getApplicationContext()).load(R.drawable.noimage300px).into(detailImageView);
         }
 
-        // TODO: query if this movie is selected already
         Button markAsFavButton = (Button) rootView.findViewById(R.id.markAsFavorite);
         final MovieDetail finalMovieDetail = movieDetail;
         markAsFavButton.setOnClickListener(new View.OnClickListener() {
@@ -200,42 +191,43 @@ public class MovieDetailActivityFragment extends Fragment {
         TextView detailSynopsis = (TextView) rootView.findViewById(R.id.detailSynopsis);
         detailSynopsis.setText(gridItem.getOverview());
 
-//        TextView detailReleaseDate = (TextView) rootView.findViewById(R.id.detailReleaseDate);
-//        detailReleaseDate.setText(gridItem.getReleaseDate());
-
-//        TextView detailUserRating = (TextView) rootView.findViewById(R.id.detailUserRating);
-//        if (null != gridItem.getVoteAverage()) {
-//            detailUserRating.setText(gridItem.getVoteAverage() + "");
-//        }
-
-        // add youtube list here
-        // add reviews list
-
-//        FetchTrailersTask ftt = new FetchTrailersTask();
-//        ftt.doInBackground();
-
-
-//        fmt.doInBackground(gridItem.getId() + "");
-
-        FetchTrailersTask trailersTask = new FetchTrailersTask();
-        AsyncTask<String, Void, TrailersList> trailersTaskRes = trailersTask.execute(movieId);
-
-        TrailersList trailersList = null;
-        try {
-            trailersList = trailersTaskRes.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        List<Trailer> trailers = trailersList.getResults();
-
+        // Fetch trailers and add to view
         LinearLayout trailerLayout = (LinearLayout) rootView.findViewById(R.id.trailerLayout);
+        List<Trailer> trailers = fetchTrailersHelper(movieId, getActivity());
+        addTrailersToLayout(trailerLayout, trailers);
 
-        // TODO: add the play image and the line in between trailers
-        // also add link to open trailer
-        // create intent
+        // Fetch reviews and add to view
+        LinearLayout reviewLayout = (LinearLayout) rootView.findViewById(R.id.reviewLayout);
+        List<Review> reviews = fetchReviewsHelper(movieId, getActivity());
+        addReviewsToLayout(reviewLayout, reviews);
+
+        return rootView;
+    }
+
+    private List<Trailer> fetchTrailersHelper(String movieId, Context context) {
+        List<Trailer> trailers = new ArrayList<Trailer>();
+        if (Utility.isOnline(context)) {
+            FetchTrailersTask trailersTask = new FetchTrailersTask();
+            AsyncTask<String, Void, TrailersList> trailersTaskRes = trailersTask.execute(movieId);
+
+            TrailersList trailersList = null;
+            try {
+                trailersList = trailersTaskRes.get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+
+            if (null != trailersList && null != trailersList.getResults()) {
+                trailers.addAll(trailersList.getResults());
+            }
+        }
+        return trailers;
+    }
+
+    private void addTrailersToLayout(LinearLayout trailerLayout, List<Trailer> trailers) {
+
         for (final Trailer trailer:trailers) {
             Log.i(Constants.LOG_TAG, trailer + "");
             LinearLayout tmpLinearLayout = new LinearLayout(getActivity());
@@ -259,40 +251,25 @@ public class MovieDetailActivityFragment extends Fragment {
                 public void onClick(View v) {
                     String youTubeUrl = "https://www.youtube.com/watch?v=" + trailer.getKey();
                     Uri u = Uri.parse(youTubeUrl);
-
-                    if (null == firstYouTubeLink) {
-                        firstYouTubeLink = youTubeUrl;
-                    }
-
                     Intent i = new Intent(Intent.ACTION_VIEW, u);
                     startActivity(i);
                 }
             });
             tmpLinearLayout.addView(innerLinearLayout);
 
-            View lineSeparatorView = new View(getActivity());
-            lineSeparatorView.setBackgroundColor(Color.DKGRAY);
-            lineSeparatorView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 2));
-            tmpLinearLayout.addView(lineSeparatorView);
+            tmpLinearLayout.addView(generateLineView(getActivity()));
             trailerLayout.addView(tmpLinearLayout);
         }
+    }
 
-        FetchReviewsTask reviewsTask = new FetchReviewsTask();
-        AsyncTask<String, Void, ReviewsList> reviewsTaskRes = reviewsTask.execute(movieId);
+    private View generateLineView(Context context) {
+        View lineSeparatorView = new View(context);
+        lineSeparatorView.setBackgroundColor(Color.DKGRAY);
+        lineSeparatorView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 2));
+        return lineSeparatorView;
+    }
 
-        ReviewsList reviewsList = null;
-        try {
-            reviewsList = reviewsTaskRes.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        List<Review> reviews = reviewsList.getResults();
-
-        LinearLayout reviewLayout = (LinearLayout) rootView.findViewById(R.id.reviewLayout);
-
+    private void addReviewsToLayout(LinearLayout reviewLayout, List<Review> reviews) {
         for (Review r: reviews) {
             TextView reviewAuthor = new TextView(getActivity());
             reviewAuthor.setText(r.getAuthor());
@@ -300,13 +277,29 @@ public class MovieDetailActivityFragment extends Fragment {
             TextView reviewContent = new TextView(getActivity());
             reviewContent.setText(r.getContent());
             reviewLayout.addView(reviewContent);
-
-            View lineSeparatorView = new View(getActivity());
-            lineSeparatorView.setBackgroundColor(Color.DKGRAY);
-            lineSeparatorView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 2));
-            reviewLayout.addView(lineSeparatorView);
+            reviewLayout.addView(generateLineView(getActivity()));
         }
+    }
 
-        return rootView;
+    private List<Review> fetchReviewsHelper(String movieId, Context context) {
+        List<Review> reviews = new ArrayList<Review>();
+        if (Utility.isOnline(context)) {
+            FetchReviewsTask reviewsTask = new FetchReviewsTask();
+            AsyncTask<String, Void, ReviewsList> reviewsTaskRes = reviewsTask.execute(movieId);
+
+            ReviewsList reviewsList = null;
+            try {
+                reviewsList = reviewsTaskRes.get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+
+            if (null != reviewsList && null != reviewsList.getResults()) {
+                reviews.addAll(reviewsList.getResults());
+            }
+        }
+        return reviews;
     }
 }

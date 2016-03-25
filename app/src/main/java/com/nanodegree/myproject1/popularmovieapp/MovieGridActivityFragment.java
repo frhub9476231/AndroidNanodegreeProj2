@@ -3,8 +3,6 @@ package com.nanodegree.myproject1.popularmovieapp;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -87,16 +85,6 @@ public class MovieGridActivityFragment extends Fragment implements AdapterView.O
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean isOnline(Context context) {
-        ConnectivityManager cm =
-                (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
-        return isConnected;
-    }
-
     // Helper method to query favorite movie list from content provider
     private List<Movie> fetchFavoriteMovies() {
         List<Movie> retval = new ArrayList<Movie>();
@@ -123,7 +111,7 @@ public class MovieGridActivityFragment extends Fragment implements AdapterView.O
 
         MoviesList r = null;
 
-        if (isOnline(getActivity())) {
+        if (Utility.isOnline(getActivity())) {
             FetchMoviesTask ft = new FetchMoviesTask();
             AsyncTask<String, Void, MoviesList> res = ft.execute(sortBy);
             try {

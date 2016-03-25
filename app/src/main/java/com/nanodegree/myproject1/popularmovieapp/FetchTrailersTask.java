@@ -23,8 +23,8 @@ public class FetchTrailersTask extends AsyncTask<String, Void, TrailersList> {
         return res;
     }
 
-    private final String BASE_URL = "http://api.themoviedb.org/3/movie";
-    private final String API_KEY_PARAM = "api_key";
+    private final String BASE_URL = Constants.BASE_MOVIE_URL;
+    private final String API_KEY_PARAM = Constants.Params.API_KEY_PARAM;
 
     private Uri constructUrl(String... params) {
         Log.i(Constants.LOG_TAG, "url params: " + params[0]);

@@ -19,12 +19,12 @@ public class FetchMovieTask extends AsyncTask<String, Void, MovieDetail> {
         return retval;
     }
 
-    private final String BASE_URL = "http://api.themoviedb.org/3/movie";
-    private final String API_KEY_PARAM = "api_key";
+    private final String BASE_URL = Constants.BASE_MOVIE_URL;
+    private final String API_KEY_PARAM = Constants.Params.API_KEY_PARAM;
 
     private Uri constructUrl(String... params) {
         Log.i(Constants.LOG_TAG, "url params: " + params[0]);
-        String url = BASE_URL;
+//        String url = BASE_URL;
         String movieId = params[0];
         Uri uri = Uri.parse(BASE_URL).buildUpon().appendPath(movieId).appendQueryParameter(API_KEY_PARAM, Constants.API_KEY).build();
         Log.i(Constants.LOG_TAG, uri + "");
